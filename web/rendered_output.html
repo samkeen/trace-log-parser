@@ -1,0 +1,25 @@
+<!doctype html>
+<head>
+    <meta charset='utf-8'/>
+    <script src='//code.jquery.com/jquery-2.0.0.min.js'></script>
+    <script src='//coffeescript.org/extras/coffee-script.js'></script>
+    <script src='jumly.min.js'></script>
+</head>
+<body>
+<h1>Request 55955f0664f1caece</h1>
+<p>Initialize Request @ Thu, 02 Jul 2015 15:55:50.4147 +0000</p>
+<script type='text/jumly+sequence'>
+@found "Client", ->
+  @message "Matched route 'GET_payloads_", "pages-api", ->
+    @note "Retrieved Payload id=99 []"
+    @note "< 200 []"
+    @reply "", "Client"
+</script>
+<h2>Raw Logs for request: 55955f0664f1caece</h2>
+<pre>
+[2015-07-02 15:55:50] FileExporterApp.INFO: > GET /payloads/99?XDEBUG_SESSION_START=1 [] #TRACE#{"token":"55955f0664f1caece","time":1435852550.4147}
+[2015-07-02 15:55:50] FileExporterApp.INFO: Matched route "GET_payloads_payloadId". {"route_parameters":{"_controller":"[object] (Closure: {})","payloadId":"99","_route":"GET_payloads_payloadId"},"request_uri":"http://localhost/payloads/99?XDEBUG_SESSION_START=1"} #TRACE#{"token":"55955f0664f1caece","time":1435852550.4203}
+[2015-07-02 15:55:50] FileExporterApp.INFO: Retrieved Payload id=99 [] #TRACE#{"token":"55955f0664f1caece","time":1435852550.4403}
+[2015-07-02 15:55:50] FileExporterApp.INFO: < 200 [] #TRACE#{"token":"55955f0664f1caece","time":1435852550.4443}
+</pre>
+</body>

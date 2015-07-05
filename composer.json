@@ -1,0 +1,19 @@
+{
+  "name": "samk/log-render",
+  "description": "parse and render trace logs",
+  "license": "The MIT License (MIT)",
+  "authors": [
+    {
+      "name": "samkeen",
+      "email": "sam.sjk@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "Io": "src/"
+    }
+  },
+  "require": {
+    "aws/aws-sdk-php": "2.*"
+  }
+}

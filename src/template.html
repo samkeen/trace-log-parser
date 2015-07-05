@@ -1,0 +1,18 @@
+<!doctype html>
+<head>
+    <meta charset='utf-8'/>
+    <script src='//code.jquery.com/jquery-2.0.0.min.js'></script>
+    <script src='//coffeescript.org/extras/coffee-script.js'></script>
+    <script src='web/js/jumly.min.js'></script>
+</head>
+<body>
+<h1>Request {{traceToken}}</h1>
+<p>{{initMessage}}</p>
+<script type='text/jumly+sequence'>
+{{sequenceMarkup}}
+</script>
+<h2>Raw Logs for request: {{traceToken}}</h2>
+<pre>
+{{rawLogs}}
+</pre>
+</body>
