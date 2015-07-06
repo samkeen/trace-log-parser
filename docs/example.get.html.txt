@@ -1,0 +1,27 @@
+<!doctype html>
+<head>
+    <meta charset='utf-8'/>
+    <script src='//code.jquery.com/jquery-2.0.0.min.js'></script>
+    <script src='//coffeescript.org/extras/coffee-script.js'></script>
+    <script src='web/js/jumly.min.js'></script>
+</head>
+<body>
+<h1>Request 5599d2f89cb8f05d6</h1>
+<p>Initialize Contact @ Mon, 06 Jul 2015 00:59:36.6421 +0000</p>
+<script type='text/jumly+sequence'>
+@found "Client", ->
+  @message "GET /payloads/1", "exportDemo", ->
+    @message "select", "persistence", ->
+      @note "Attempting retrieval of Payload id=1 "
+      @reply "", "exportDemo"
+    @reply "HTTP response: 200 ", "Client"
+
+</script>
+<h2>Raw Logs for request: 5599d2f89cb8f05d6</h2>
+<pre>
+[2015-07-06 00:59:36] FileExporterApp.INFO: GET /payloads/1?XDEBUG_SESSION_START=1 [] #TRACE#{"event":"request.start","token":"5599d2f89cb8f05d6","time":1436144376.6421}
+[2015-07-06 00:59:36] FileExporterApp.INFO: Matched route "GET_payloads_payloadId". {"route_parameters":{"_controller":"[object] (Closure: {})","payloadId":"1","_route":"GET_payloads_payloadId"},"request_uri":"http://52.24.23.223/payloads/1?XDEBUG_SESSION_START=1"} #TRACE#{"token":"5599d2f89cb8f05d6","time":1436144376.6437}
+[2015-07-06 00:59:36] FileExporterApp.INFO: Attempting retrieval of Payload id=1 [] #TRACE#{"event":"boundary.enter:persistence:select:payload","token":"5599d2f89cb8f05d6","time":1436144376.6441}
+[2015-07-06 00:59:36] FileExporterApp.INFO: HTTP response: 200 [] #TRACE#{"event":"response.send","token":"5599d2f89cb8f05d6","time":1436144376.6537}
+</pre>
+</body>

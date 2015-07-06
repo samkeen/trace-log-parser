@@ -20,6 +20,9 @@ class LogTraceParser
     const MESSAGE_PATTERN = '/^(?P<level>[\w\.]+): +(?P<message>.*)$/';
     const TRACE_MARKER = '#TRACE#';
 
+    /**
+     * @var array Array of regex's for patterns to skip
+     */
     public $statementIgnorePatterns = [];
 
     const INDENT = '  ';
@@ -43,45 +46,61 @@ class LogTraceParser
         $parsedStatements = $rawStatements =[];
         foreach ($logStatements['events'] as $index => $logStatement) {
             $rawStatements[] = $logStatement['message'];
-            $parsedStatements[] = $this->matchLine($logStatement['message']);
+            $matchedLine = $this->matchLine($logStatement['message']);
+            if($matchedLine) {
+                $parsedStatements[] = $matchedLine;
+            }
         }
 
         return [$rawStatements, $parsedStatements];
     }
 
+    /**
+     * Render Jumly DSL
+     * See: http://jumly.tmtk.net/
+     *
+     * @param $rawStatements
+     * @param $parsedStatements
+     * @param $templatePath
+     * @param null $targetPath
+     * @return mixed|null
+     */
     public function render($rawStatements, $parsedStatements, $templatePath, $targetPath = null)
     {
+        // Start the diagram with our initial Actor
         $sequenceMarkup = '@found "Client", ->' . PHP_EOL;
         /*
          * @assume First statement is the init statement
-         *  Create the initial HTML the proceeds the script sequence markup
+         *  Create the initial HTML that proceeds the script sequence markup
          */
-        $firstRecord = array_shift($parsedStatements);
+        $firstRecord = $parsedStatements[0];
         $traceToken = (string)$firstRecord['token'];
-        $initTime = $this->formatMicrotime($firstRecord['time']);
-        $initMessage = "Initialize Request @ {$initTime}";
-
+        $initMessage = "Initialize Contact";
+        if(isset($firstRecord['time'])) {
+            $initTime = $this->formatMicrotime($firstRecord['time']);
+            $initMessage .= " @ {$initTime}";
+        }
         $matchedRouteStatement = array_shift($parsedStatements);
         $matchedRouteStatement['message'] = $this->getRouteMessage($matchedRouteStatement);
         $sequenceMarkup .= ($this->indent() . $this->renderMessage($matchedRouteStatement) . PHP_EOL);
         $this->indentCount++;
-
-
         foreach ($parsedStatements as $parsedLine) {
-            if ($this->isDbInteraction($parsedLine)) {
+            $traceEvent = new TraceEvent($parsedLine);
+            if($traceEvent->isBoundaryEntry()) {
                 $sequenceMarkup .= ($this->indent()
-                    . $this->renderDbInterAction($parsedLine)
+                    . $this->renderDbInterAction($parsedLine, $traceEvent)
+                    . PHP_EOL
+                );
+            } else if($traceEvent->isResponseSend()) {
+                $sequenceMarkup .= ($this->indent()
+                    . $this->renderResponseToClient($parsedLine, $traceEvent)
                     . PHP_EOL
                 );
             } else {
                 $sequenceMarkup .= ($this->indent() . $this->renderNote($parsedLine) . PHP_EOL);
             }
         }
-
-        $sequenceMarkup .= ($this->indent() . $this->finalizeSequenceMarkup());
-
         $template = file_get_contents($templatePath);
-
         $renderedTemplate = preg_replace(
             [
                 '/{{traceToken}}/',
@@ -112,7 +131,7 @@ class LogTraceParser
         if (!preg_match(static::OVERALL_PATTERN, $logStatement, $matches)) {
             $parsedLine = "There was no match on: {$logStatement}";
         } else {
-            $statement = trim($matches['statement']);
+            $statement = preg_replace('/(\[\])$/', '', trim($matches['statement']));
             $ignore = false;
             foreach ($this->statementIgnorePatterns as $messageIgnorePattern) {
                 if (preg_match($messageIgnorePattern, $statement)) {
@@ -161,9 +180,14 @@ class LogTraceParser
         return str_repeat(static::INDENT, $this->indentCount);
     }
 
-    private function renderDbInteraction($parsedLine)
+    /**
+     * @param $parsedLine
+     * @param TraceEvent $traceEvent
+     * @return string
+     */
+    private function renderDbInteraction($parsedLine, TraceEvent $traceEvent)
     {
-        $sequenceMarkup = '@message "", "DB", ->' . PHP_EOL;
+        $sequenceMarkup = '@message "'.$traceEvent->getEventAction().'", "'.$traceEvent->getEventContext().'", ->' . PHP_EOL;
         $this->indentCount++;
         $sequenceMarkup .= $this->indent() . '@note "' . $parsedLine['message'] . '"' . PHP_EOL;
         $sequenceMarkup .= $this->indent() . '@reply "", "' . $this->serviceName . '"';
@@ -174,7 +198,8 @@ class LogTraceParser
 
     private function getRouteMessage($parsedLine)
     {
-        return substr($parsedLine['message'], 0, 28);
+        preg_match('%(POST|GET|PUT|DELETE|PATCH|HEAD|OPTIONS) +/[^\?]+%', $parsedLine['message'], $match);
+        return $match ? $match[0] : substr($parsedLine['message'], 0, 20) . '...';
     }
 
     private function renderNote($parsedLine)
@@ -191,13 +216,8 @@ class LogTraceParser
         return '@message "' . $message . '", "' . $this->serviceName . '", ->';
     }
 
-    private function isDbInteraction($parsedLine)
+    private function renderResponseToClient($parsedLine, TraceEvent $traceEvent)
     {
-        return $parsedLine['level'] == 'doctrine.DEBUG';
-    }
-
-    private function finalizeSequenceMarkup()
-    {
-        return '@reply "", "Client"';
+        return '@reply "'.$parsedLine['message'].'", "Client"';
     }
 }

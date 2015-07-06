@@ -21,7 +21,16 @@ if ($traceToken) {
     $awsClient = new AwsClient($awsArgs);
     $awsClient->init();
     $logStatements = $awsClient->getStatementsForTrace($traceToken, $cloudWatchLogGroup);
-    $parser = new LogTraceParser('exportDemo');
+    if(!$logStatements['events']) {
+        echo "No Log statements retrieved from AWS Cloud Watch Logs for trace token: {$traceToken}";
+        exit;
+    }
+    $parser = new LogTraceParser(
+        'exportDemo',
+        [
+            '/INFO: Matched route/'
+        ]
+    );
     $markup = $parser->run($logStatements, $renderTemplatePath);
 }
 
