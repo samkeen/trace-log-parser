@@ -85,19 +85,25 @@ class LogTraceParser
         $sequenceMarkup .= ($this->indent() . $this->renderMessage($matchedRouteStatement) . PHP_EOL);
         $this->indentCount++;
         foreach ($parsedStatements as $parsedLine) {
-            $traceEvent = new TraceEvent($parsedLine);
-            if($traceEvent->isBoundaryEntry()) {
-                $sequenceMarkup .= ($this->indent()
-                    . $this->renderDbInterAction($parsedLine, $traceEvent)
-                    . PHP_EOL
-                );
-            } else if($traceEvent->isResponseSend()) {
-                $sequenceMarkup .= ($this->indent()
-                    . $this->renderResponseToClient($parsedLine, $traceEvent)
-                    . PHP_EOL
-                );
-            } else {
-                $sequenceMarkup .= ($this->indent() . $this->renderNote($parsedLine) . PHP_EOL);
+            /**
+             * @TODO not ready to integrate these yet.
+             */
+            $isStatementFromAnotherService = isset($parsedLine['inboundToken']) && $parsedLine['inboundToken'];
+            if(!$isStatementFromAnotherService) {
+                $traceEvent = new TraceEvent($parsedLine);
+                if($traceEvent->isBoundaryEntry()) {
+                    $sequenceMarkup .= ($this->indent()
+                        . $this->renderDbInterAction($parsedLine, $traceEvent)
+                        . PHP_EOL
+                    );
+                } else if($traceEvent->isResponseSend()) {
+                    $sequenceMarkup .= ($this->indent()
+                        . $this->renderResponseToClient($parsedLine, $traceEvent)
+                        . PHP_EOL
+                    );
+                } else {
+                    $sequenceMarkup .= ($this->indent() . $this->renderNote($parsedLine) . PHP_EOL);
+                }
             }
         }
         $template = file_get_contents($templatePath);
@@ -142,6 +148,7 @@ class LogTraceParser
             if (!$ignore) {
                 $parsedLine = $this->parseStatement($statement) + $this->parseTrace($matches['trace']);
             }
+
         }
 
         return $parsedLine;
