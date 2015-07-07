@@ -1,0 +1,34 @@
+<!doctype html>
+<head>
+    <meta charset='utf-8'/>
+    <script src='//code.jquery.com/jquery-2.0.0.min.js'></script>
+    <script src='//coffeescript.org/extras/coffee-script.js'></script>
+    <script src='../web/js/jumly.min.js'></script>
+</head>
+<body>
+<h1>Request 559adac8244b4a51b</h1>
+<p>Initialize Contact @ Mon, 06 Jul 2015 19:45:12.1505 +0000</p>
+<script type='text/jumly+sequence'>
+@found "Client", ->
+  @message "POST /work ", "exportDemo", ->
+    @note "POST /payloads?XDEBUG_SESSION_START=1 "
+    @message "insert", "persistence", ->
+      @note "Persisting Payload "
+      @reply "", "exportDemo"
+    @note "POSTed work to http://52.27.121.103/work, response: 204 No Content "
+    @reply "HTTP response: 204 ", "Client"
+
+</script>
+<h2>Raw Logs for request: 559adac8244b4a51b</h2>
+<pre>
+[2015-07-06 19:45:12] FileExporterAppCompanion.INFO: POST /work [] #TRACE#{"event":"request.start","token":"559adac8244b4a51b","inboundToken":"559adac81ae0e8555","time":1436211912.1505}
+[2015-07-06 19:45:12] FileExporterAppCompanion.INFO: Matched route "POST_work". {"route_parameters":{"_controller":"[object] (Closure: {})","_route":"POST_work"},"request_uri":"http://52.27.121.103/work"} #TRACE#{"token":"559adac8244b4a51b","inboundToken":"559adac81ae0e8555","time":1436211912.1524}
+[2015-07-06 19:45:12] FileExporterAppCompanion.INFO: Received Work: {   "name": "bob terwilliger" } [] #TRACE#{"token":"559adac8244b4a51b","inboundToken":"559adac81ae0e8555","time":1436211912.1528}
+[2015-07-06 19:45:12] FileExporterAppCompanion.INFO: HTTP response: 204 [] #TRACE#{"event":"response.send","token":"559adac8244b4a51b","inboundToken":"559adac81ae0e8555","time":1436211912.1547}
+[2015-07-06 19:45:12] FileExporterApp.INFO: POST /payloads?XDEBUG_SESSION_START=1 [] #TRACE#{"event":"request.start","token":"559adac81ae0e8555","inboundToken":null,"time":1436211912.1103}
+[2015-07-06 19:45:12] FileExporterApp.INFO: Matched route "POST_payloads". {"route_parameters":{"_controller":"[object] (Closure: {})","_route":"POST_payloads"},"request_uri":"http://52.24.23.223/payloads?XDEBUG_SESSION_START=1"} #TRACE#{"token":"559adac81ae0e8555","inboundToken":null,"time":1436211912.112}
+[2015-07-06 19:45:12] FileExporterApp.INFO: Persisting Payload [] #TRACE#{"event":"boundary.enter:persistence:insert:payload","token":"559adac81ae0e8555","inboundToken":null,"time":1436211912.1124}
+[2015-07-06 19:45:12] FileExporterApp.INFO: POSTed work to http://52.27.121.103/work, response: 204 No Content [] #TRACE#{"token":"559adac81ae0e8555","inboundToken":null,"time":1436211912.1543}
+[2015-07-06 19:45:12] FileExporterApp.INFO: HTTP response: 204 [] #TRACE#{"event":"response.send","token":"559adac81ae0e8555","inboundToken":null,"time":1436211912.1564}
+</pre>
+</body>
